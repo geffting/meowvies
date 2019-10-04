@@ -2,7 +2,9 @@
   <b-container class="header" fluid>
     <b-row>
       <b-col cols="1">
-        <img src="cat.png" class="cat-img">
+        <nuxt-link to="/">
+          <img src="cat.png" class="cat-img">
+        </nuxt-link>
       </b-col>
       <b-col cols="2" />
       </b-col>
@@ -13,7 +15,7 @@
           <b>Populares</b>
         </nuxt-link>
       </b-col>
-      <b-col v-if="loggedUser" cols="3" class="main-links">
+      <b-col v-if="user" cols="3" class="main-links">
         <nuxt-link
           to="/favorites"
         >
@@ -25,7 +27,7 @@
           <b>Seus Favoritos</b>
         </p>
       </b-col>
-      <b-col cols="3" class="login-btn">
+      <b-col v-if="!user" cols="3" class="login-btn">
         <b-button
           v-b-modal.modal-login
           variant="light"
@@ -79,6 +81,11 @@
   </b-container>
 </template>
 <script>
+import axios from 'axios'
+
+axios.defaults.baseURL = 'https://api.themoviedb.org/3'
+const apiKey = 'd431c718cc7beea2c420c2a96b81f3c9'
+
 export default {
   name: 'HomeHeader',
 
@@ -86,13 +93,19 @@ export default {
     return {
       username: '',
       password: '',
-      loggedUser: false
+      user: false // use vuex
     }
   },
 
   methods: {
     login () {
-      // do login
+      axios.get(`/authentication/token/new?api_key=${apiKey}`)
+        .then((response) => {
+          window.open(`https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=http://localhost:3000/`)
+        })
+        .catch((error) => {
+          alert(error)
+        })
     },
     register () {
       // do register
