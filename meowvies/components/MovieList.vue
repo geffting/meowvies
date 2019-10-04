@@ -2,9 +2,29 @@
   <div v-if="movieList">
     <b-row v-for="movie in movieList" :key="movie.id" class="default-margin-top" align-h="center">
       <b-col cols="11">
-        <b-card :img-src="movie.poster" img-alt="poster" img-height="300" img-left>
+        <b-card :img-src="movie.poster" img-alt="poster" img-height="300" img-left class="movie-card">
           <b-card-text>
-            <h3> {{ movie.title }} </h3>
+            <b-row>
+              <b-col>
+                <h3> {{ movie.title }} </h3>
+              </b-col>
+              <b-col v-if="user" class="text-right">
+                <b-button
+                  v-if="favorite"
+                  variant="outline-dark"
+                >
+                  <font-awesome-icon icon="ban" />
+                  Remover dos favoritos
+                </b-button>
+                <b-button
+                  v-else
+                  variant="outline-dark"
+                >
+                  <font-awesome-icon icon="paw" />
+                  Adicionar aos favoritos
+                </b-button>
+              </b-col>
+            </b-row>
             <i>{{ movie.date }}</i>
             <hr>
             <p> {{ movie.description }} </p>
@@ -27,30 +47,23 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'MovieList',
 
+  data () {
+    return {
+      user: true,
+      favorite: false
+    }
+  },
+
   computed: {
     ...mapGetters(['movieList'])
   },
 
   created () {
-    const path = this.getCurrentPath()
-    this.fetchMovies(path)
+    this.fetchMovies()
   },
 
   methods: {
-    ...mapActions(['fetchMovies']),
-
-    getCurrentPath () {
-      const currentRoute = this.$nuxt.$route.name
-
-      if (currentRoute === 'index') {
-        return '/movie/popular'
-      } else if (currentRoute === 'favorites') {
-        const accountId = null // ver como pegar isso depois
-        return `/account/${accountId}/favorite/movies`
-      } else {
-        return null
-      }
-    }
+    ...mapActions(['fetchMovies'])
   }
 }
 </script>
@@ -64,6 +77,10 @@ export default {
 .spinner {
   width: 100px;
   height: 100px;
+}
+
+.movie-card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 </style>
