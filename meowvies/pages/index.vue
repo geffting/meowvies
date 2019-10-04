@@ -1,8 +1,12 @@
 <template>
-  <b-container class="main-container" fluid>
+  <b-container class="footer-margin" fluid>
     <home-header />
-    <b-row class="interval-header" />
-    <b-row align-h="center" class="default-margin">
+    <b-row align-h="center" class="default-margin-top">
+      <b-col cols="11">
+        <h3>Filmes mais populares (atualizado diariamente)</h3>
+      </b-col>
+    </b-row>
+    <b-row align-h="center" class="default-margin-top">
       <b-col cols="11">
         <b-row>
           <b-col>
@@ -16,79 +20,26 @@
         </b-row>
       </b-col>
     </b-row>
-    <b-row v-for="movie in movies" :key="movie.id" class="default-margin" align-h="center">
-      <b-col cols="11">
-        <b-card>
-          <b-media no-body>
-            <b-media-aside vertical-align="center">
-              <b-img blank blank-color="#ccc" width="180" height="256" alt="placeholder" />
-              <b-media-body class="ml-3">
-                <h5>
-                  {{ movie.title }}
-                </h5>
-                <p>
-                  {{ movie.description }}
-                </p>
-              </b-media-body>
-            </b-media-aside>
-          </b-media>
-        </b-card>
-      </b-col>
-    </b-row>
+    <movie-list />
   </b-container>
 </template>
 
 <script>
 import HomeHeader from '../components/HomeHeader'
+import MovieList from '../components/MovieList'
 
 export default {
   components: {
-    HomeHeader
+    HomeHeader,
+    MovieList
   },
 
   data () {
     return {
-      search: '',
-      movies: []
+      search: ''
     }
-  },
-
-  mounted () {
-    const movieList = [
-      {
-        'id': 1,
-        'title': 'Harry Potter',
-        'description': 'filme de magia'
-      },
-      {
-        'id': 2,
-        'title': 'Duro de Matar',
-        'description': 'filme de tiro'
-      },
-      {
-        'id': 3,
-        'title': 'Velozes e Furiosos',
-        'description': 'filme de carro'
-      }
-    ]
-
-    this.movies = movieList
-
-    console.log(this.movies) // eslint-disable-line no-console
   }
 }
 </script>
-<style>
-.main-container {
-  margin-bottom: 20px;
-}
-
-.interval-header {
-  padding-top: 90px;
-}
-
-.default-margin {
-  margin-top: 15px;
-}
-
+<style scoped>
 </style>
