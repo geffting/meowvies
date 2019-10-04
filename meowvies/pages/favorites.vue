@@ -3,7 +3,7 @@
     <home-header />
     <b-row align-h="center" class="default-margin-top">
       <b-col cols="11">
-        <h3>Seus filmes favoritos</h3>
+        <h3><font-awesome-icon icon="cat" /> Seus filmes favoritos</h3>
       </b-col>
     </b-row>
     <movie-list />
