@@ -10,6 +10,7 @@
   </b-container>
 </template>
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import HomeHeader from '../components/HomeHeader'
 import MovieList from '../components/MovieList'
 
@@ -17,6 +18,26 @@ export default {
   components: {
     HomeHeader,
     MovieList
+  },
+
+  computed: {
+    ...mapGetters(['sessionId'])
+  },
+
+  mounted () {
+    const sessionId = sessionStorage.getItem('sessionId')
+    if (sessionId) {
+      this.fetchFavoriteMovies(sessionId)
+    } else {
+      alert('Faça login para acessar sua lista de favoritos. Miau.')
+      this.$router.push({
+        path: '/'
+      })
+    }
+  },
+
+  methods: {
+    ...mapActions(['fetchFavoriteMovies'])
   }
 }
 </script>

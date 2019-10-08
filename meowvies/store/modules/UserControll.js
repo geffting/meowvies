@@ -4,49 +4,43 @@ axios.defaults.baseURL = 'https://api.themoviedb.org/3'
 const apiKey = 'd431c718cc7beea2c420c2a96b81f3c9'
 
 const state = {
-  user: null,
-  authToken: null
+  sessionId: null,
+  requestToken: null
 }
 
 const getters = {
-  user: state => state.user,
+  sessionId: state => state.sessionId,
+  requestToken: state => state.requestToken
 }
 
 const actions = {
   generateToken ({ commit }) {
     axios.get(`/authentication/token/new?api_key=${apiKey}`)
       .then((response) => {
-        commit('setAuthToken', response.request_token)
+        commit('setRequestToken', response.data.request_token)
       })
       .catch((error) => {
         alert(error)
       })
   },
-  authentication ({ commit }) {
-    axios.get(``)
+  createSession ({ commit }, token) {
+    axios.post(`/authentication/session/new?api_key=${apiKey}`, { request_token: token })
       .then((response) => {
-
-        commit('setUser', user)
+        commit('setSessionId', response.data.session_id)
+        sessionStorage.setItem('sessionId', response.data.session_id)
       })
       .catch((error) => {
         alert(error)
       })
   },
-  loginUser ({ commit }) {
-    axios.get(``)
-      .then((response) => {
-
-        commit('setUser', user)
-      })
-      .catch((error) => {
-        alert(error)
-      })
+  quitSession () {
+    sessionStorage.clear()
   }
 }
 
 const mutations = {
-  setAuthToken: (state, token) => (state.authToken = token)
-  setUser: (state, user) => (state.user = user)
+  setRequestToken: (state, token) => (state.requestToken = token),
+  setSessionId: (state, id) => (state.sessionId = id)
 }
 
 export default {

@@ -15,7 +15,7 @@
           <b>Populares</b>
         </nuxt-link>
       </b-col>
-      <b-col v-if="user" cols="3" class="main-links">
+      <b-col v-if="session" cols="3" class="main-links">
         <nuxt-link
           to="/favorites"
         >
@@ -27,88 +27,84 @@
           <b>Seus Favoritos</b>
         </p>
       </b-col>
-      <b-col v-if="!user" cols="3" class="login-btn">
+      <b-col v-if="!session" cols="3" class="login-btn">
         <b-button
-          v-b-modal.modal-login
           variant="light"
+          @click="generateToken"
         >
           Entrar
         </b-button>
+      </b-col>
+      <b-col v-else cols="3" class="login-btn">
         <b-button
-          v-b-modal.modal-register
           variant="light"
+          @click="logout"
         >
-          Cadastre-se
+          Sair
         </b-button>
       </b-col>
     </b-row>
-    <b-modal id="modal-login" title="Entrar" @ok="login">
-      <b-row class="md-form">
-        <b-col cols="3">
-          <label for="username">Username: </label>
-        </b-col>
-        <b-col cols="9">
-          <b-form-input id="username" v-model="username" type="text" />
-        </b-col>
-      </b-row>
-      <b-row class="md-form">
-        <b-col cols="3">
-          <label for="password">Senha: </label>
-        </b-col>
-        <b-col cols="9">
-          <b-form-input id="password" v-model="password" type="password" />
-        </b-col>
-      </b-row>
-    </b-modal>
-    <b-modal id="modal-register" title="Cadastre-se" @ok="register">
-      <b-row class="md-form">
-        <b-col cols="3">
-          <label for="username">Username: </label>
-        </b-col>
-        <b-col cols="9">
-          <b-form-input id="username" v-model="username" type="text" />
-        </b-col>
-      </b-row>
-      <b-row class="md-form">
-        <b-col cols="3">
-          <label for="password">Senha: </label>
-        </b-col>
-        <b-col cols="9">
-          <b-form-input id="password" v-model="password" type="password" />
-        </b-col>
-      </b-row>
-    </b-modal>
   </b-container>
 </template>
 <script>
-import axios from 'axios'
-
-axios.defaults.baseURL = 'https://api.themoviedb.org/3'
-const apiKey = 'd431c718cc7beea2c420c2a96b81f3c9'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'HomeHeader',
 
   data () {
     return {
-      username: '',
-      password: '',
-      user: false // use vuex
+      session: null
     }
   },
 
+  computed: {
+    ...mapGetters(['requestToken'])
+  },
+
+  mounted () {
+    const sessionId = sessionStorage.getItem('sessionId')
+
+    if (sessionId) {
+      this.session = sessionId
+    }
+
+    const url = new URL(window.location.href)
+    const token = url.searchParams.get('request_token')
+    const approved = url.searchParams.get('approved')
+    if (token != null && approved === 'true') {
+      this.createSession(token)
+    }
+
+    this.$store.watch(
+      (state, getters) => getters.requestToken,
+      (newToken) => {
+        window.location.replace(`https://www.themoviedb.org/authenticate/${newToken}?redirect_to=http://localhost:3000/`)
+      }
+    )
+
+    this.$store.watch(
+      (state, getters) => getters.sessionId,
+      () => {
+        const session = sessionStorage.getItem('sessionId')
+
+        if (session) {
+          this.session = session
+        }
+      }
+    )
+  },
+
   methods: {
-    login () {
-      axios.get(`/authentication/token/new?api_key=${apiKey}`)
-        .then((response) => {
-          window.open(`https://www.themoviedb.org/authenticate/${response.request_token}?redirect_to=http://localhost:3000/`)
-        })
-        .catch((error) => {
-          alert(error)
-        })
-    },
-    register () {
-      // do register
+    ...mapActions(['generateToken', 'createSession', 'fetchFavoriteMovies', 'quitSession']),
+
+    logout () {
+      this.$router.push({
+        path: '/'
+      })
+
+      this.session = null
+      this.quitSession()
     }
   }
 }
