@@ -59,11 +59,11 @@ export default {
   },
 
   created () {
-    this.fetchMovies()
+    this.fetchPopularMovies()
   },
 
   methods: {
-    ...mapActions(['fetchMovies'])
+    ...mapActions(['fetchPopularMovies'])
   }
 }
 </script>
