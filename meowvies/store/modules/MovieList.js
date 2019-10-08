@@ -90,6 +90,21 @@ const actions = {
       .catch((error) => {
         alert(error)
       })
+  },
+  markAsFavorite ({ commit }, sessionId, movieId, favorite) {
+    const data = {
+      'media_type': 'movie',
+      'media_id': movieId,
+      favorite
+    }
+
+    axios.post(`/account/null/favorite?api_key=${apiKey}&session_id=${sessionId}`, data, { headers: { 'Content-Type': 'application/json;charset=utf-8' } })
+      .then((response) => {
+        // do something
+      })
+      .catch((error) => {
+        alert(error)
+      })
   }
 }
 
